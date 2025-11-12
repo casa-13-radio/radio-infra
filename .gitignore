@@ -1,0 +1,17 @@
+# 1. SEGREDOS
+*.env
+
+# 2. LOGS
+logs/
+
+# 3. CONTEÚDO (MÚSICA)
+music/dp/*
+music/cc/*
+
+# ...mas mantenha as pastas vivas com .gitkeep
+!music/dp/.gitkeep
+!music/cc/.gitkeep
+
+# 4. LIXO DE SISTEMA
+.DS_Store
+Thumbs.db
