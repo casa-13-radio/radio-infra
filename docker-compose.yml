@@ -53,6 +53,7 @@ services:
     image: savonet/liquidsoap:v2.4.0 # (Usando uma versão moderna)
     container_name: radio_liquidsoap
     restart: unless-stopped
+    command: ["/usr/src/radio/radio.liq"]
     volumes:
       - ./radio.liq:/usr/src/radio/radio.liq # (O script do "DJ")
       - ./music:/var/radio/music           # (SUA PASTA DE MÚSICAS)
