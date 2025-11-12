@@ -15,3 +15,5 @@ music/cc/*
 # 4. LIXO DE SISTEMA
 .DS_Store
 Thumbs.db
+
+icecast.xml
