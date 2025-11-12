@@ -2,7 +2,12 @@
     <location>Brasil</location>
     <admin>seu@email.com</admin>
     <hostname>radiocasa13-api.duckdns.org</hostname>
-    
+    <authentication>
+        <source-password>hackme</source-password>
+        <relay-password>hackme</relay-password>
+        <admin-user>admin</admin-user>
+        <admin-password>hackme</admin-password>
+    </authentication>
     <listen-socket>
         <port>8000</port>
     </listen-socket>
