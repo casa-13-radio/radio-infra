@@ -50,7 +50,7 @@ services:
       - ICECAST_ADMIN_PASSWORD=${ICECAST_ADMIN_PASSWORD}
 
   liquidsoap:
-    image: savonet/liquidsoap:v2.2.x # (Usando uma versão moderna)
+    image: savonet/liquidsoap:v2.2 # (Usando uma versão moderna)
     container_name: radio_liquidsoap
     restart: unless-stopped
     volumes:
