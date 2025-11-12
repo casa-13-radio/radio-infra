@@ -14,12 +14,8 @@ playlist_cc = playlist(id="playlist_cc", mode="random", "/var/radio/music/cc")
 # Combina as duas playlists. Toca 3 músicas de CC, depois 1 de DP, e repete.
 radio = random(id="radio_main", weights=[3, 1], [playlist_cc, playlist_dp])
 
-# Adiciona um som de emergência caso as playlists fiquem vazias
-# Gera um tom de teste (bip) para nunca ficar em silêncio
-emergency = single("annotate:title='Rádio Casa 13 - Aguardando músicas':sine(duration=10.)")
-
-# Usa a rádio principal, mas se falhar, usa o som de emergência
-radio = fallback(track_sensitive=false, [radio, emergency])
+# Adiciona silêncio como fallback de emergência (fonte infallible)
+radio = fallback(track_sensitive=false, [radio, blank()])
 
 # --- Saída para o Icecast ---
 # Envia a música para o servidor Icecast
