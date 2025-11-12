@@ -1,0 +1,18 @@
+<icecast>
+    <location>Brasil</location>
+    <admin>seu@email.com</admin>
+    <hostname>radiocasa13-api.duckdns.org</hostname>
+    <listen-socket>
+        <port>8000</port>
+    </listen-socket>
+    <fileserve>1</fileserve>
+    <paths>
+        <logdir>/var/log/icecast</logdir>
+        <webroot>/usr/share/icecast/web</webroot>
+        <alias source="/" dest="/status.xsl"/>
+    </paths>
+    <mount>
+        <mount-name>/stream</mount-name>
+        <max-listeners>1000</max-listeners>
+    </mount>
+</icecast>
