@@ -60,7 +60,6 @@ services:
     command: ["/usr/src/radio/radio.liq"]
     volumes:
       - ./radio.liq:/usr/src/radio/radio.liq # (O script do "DJ")
-      - ./music:/var/radio/music           # (SUA PASTA DE MÚSICAS)
       - ./logs/liquidsoap:/var/log/liquidsoap # (Para logs)
     expose:
       - "1234" # (Porta Telnet para a API poder pular música)
