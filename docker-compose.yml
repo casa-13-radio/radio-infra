@@ -34,7 +34,7 @@ services:
       - radio_network
 
   icecast:
-    image: karls/icecast:kh
+    image: karls/icecast-kh
     container_name: radio_icecast
     restart: unless-stopped
     volumes:
