@@ -1,0 +1,11 @@
+radiocasa13-api.duckdns.org {
+    # Encaminha o tráfego para o container "api"
+    # (que é o nome do serviço na sua rede Docker) na porta 3000.
+    reverse_proxy api:3000
+
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        X-XSS-Protection "1; mode=block"
+    }
+}
