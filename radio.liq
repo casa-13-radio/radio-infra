@@ -22,7 +22,8 @@ output.icecast(
   id = "main_stream",
   host = "icecast", # O nome do serviço no Docker
   port = 8000,
-  password = getenv("ICECAST_SOURCE_PASSWORD"),
+  # Tenta pegar a senha do .env, se falhar, usa "fallback"
+  password = getenv("ICECAST_SOURCE_PASSWORD", default="fallback"),
   mount = "/stream",
   radio
 )
