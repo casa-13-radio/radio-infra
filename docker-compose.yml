@@ -30,6 +30,10 @@ services:
       # A API também precisa da senha de admin para monitorar o Icecast
       - ICECAST_ADMIN_USER=${ICECAST_ADMIN_USER}
       - ICECAST_ADMIN_PASSWORD=${ICECAST_ADMIN_PASSWORD}
+      - S3_ENDPOINT_URL=${S3_ENDPOINT_URL}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY}
+      - S3_SECRET_KEY=${S3_SECRET_KEY}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
     networks:
       - radio_network
 
