@@ -1,5 +1,5 @@
 # Define o caminho dos logs
-set("log.file.path", "/var/log/liquidsoap/radio.log")
+# set("log.file.path", "/var/log/liquidsoap/radio.log")  # COMENTADO - logs vão para stdout
 
 # Habilita o servidor Telnet para a API poder controlar
 set("server.telnet", true)
