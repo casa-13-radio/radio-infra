@@ -1,13 +1,11 @@
-
 services:
-  # Caddy como reverse proxy com SSL automático
   caddy:
     image: caddy:2-alpine
     container_name: radio_caddy
     restart: unless-stopped
     ports:
-      - "80:80"    # HTTP → redireciona para HTTPS
-      - "443:443"  # HTTPS
+      - "80:80"
+      - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
@@ -17,14 +15,12 @@ services:
     depends_on:
       - api
 
-
-  # Backend FastAPI
   api:
     image: ghcr.io/casa-13-radio/radio-api:latest
     container_name: radio_api
     restart: unless-stopped
     expose:
-      - "3000"  # Só acessível dentro da rede Docker
+      - "3000" # Só acessível dentro da rede Docker
     environment:
       - ENVIRONMENT=production
     networks:
