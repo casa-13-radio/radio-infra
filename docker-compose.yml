@@ -34,6 +34,11 @@ services:
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+    dns:
+      - 10.0.2.1 # O IP do gateway que você encontrou
+      - 8.8.8.8  # Um fallback, caso o gateway falhe
+    volumes:
+      - ./api-override/main.py:/app/main.py
     networks:
       - radio_network
 
@@ -63,6 +68,9 @@ services:
       - ./logs/liquidsoap:/var/log/liquidsoap # (Para logs)
     expose:
       - "1234" # (Porta Telnet para a API poder pular música)
+    dns:
+      - 10.0.2.1 # O IP do gateway que você encontrou
+      - 8.8.8.8  # Um fallback, caso o gateway falhe
     networks:
       - radio_network
     depends_on:

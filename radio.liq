@@ -3,13 +3,17 @@ settings.server.telnet := true
 settings.server.telnet.port := 1234
 settings.server.telnet.bind_addr := "0.0.0.0"
 
-# O CORAÇÃO DA FASE 2
-# Pergunta para a API (http://api:3000) qual música tocar
+# 1. Primeiro, definimos uma FUNÇÃO que sabe como pedir uma música.
+def get_next_song_from_api()
+  # Ela retorna um *objeto* de requisição
+  request.create("http://api:3000/api/v1/queue/next")
+end
+
+# 2. Agora, dizemos ao request.dynamic para usar aquela FUNÇÃO.
 radio = request.dynamic(
   id="api_playlist",
-  request.create("http://api:3000/api/v1/queue/next")
+  get_next_song_from_api
 )
-
 radio = fallback(track_sensitive=false, [radio, blank()])
 
 output.icecast(

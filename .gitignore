@@ -16,4 +16,4 @@ music/cc/*
 .DS_Store
 Thumbs.db
 
-icecast.xml
+icecast.xmlapi-override/
