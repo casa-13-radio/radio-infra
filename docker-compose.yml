@@ -37,8 +37,6 @@ services:
     dns:
       - 10.0.2.1 # O IP do gateway que você encontrou
       - 8.8.8.8  # Um fallback, caso o gateway falhe
-    volumes:
-      - ./api-override/main.py:/app/main.py
     networks:
       - radio_network
 
