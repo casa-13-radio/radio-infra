@@ -14,7 +14,11 @@ services:
       - radio_network
     depends_on:
       - api
-      - icecast
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
 
   api:
     image: ghcr.io/casa-13-radio/radio-api:latest 
@@ -22,59 +26,21 @@ services:
     restart: unless-stopped
     expose:
       - "3000"
+    volumes:
+      - ./api-override/main.py:/app/main.py
     environment:
       - ENVIRONMENT=production
-      - ICECAST_URL=${ICECAST_URL}
-      - LIQUIDSOAP_HOST=${LIQUIDSOAP_HOST}
-      - LIQUIDSOAP_PORT=${LIQUIDSOAP_PORT}
-      # A API também precisa da senha de admin para monitorar o Icecast
-      - ICECAST_ADMIN_USER=${ICECAST_ADMIN_USER}
-      - ICECAST_ADMIN_PASSWORD=${ICECAST_ADMIN_PASSWORD}
       - S3_ENDPOINT_URL=${S3_ENDPOINT_URL}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - S3_BUCKET_NAME=${S3_BUCKET_NAME}
-    dns:
-      - 10.0.2.1 # O IP do gateway que você encontrou
-      - 8.8.8.8  # Um fallback, caso o gateway falhe
     networks:
       - radio_network
-
-  icecast:
-    image: rolla/icecast-kh
-    container_name: radio_icecast
-    restart: unless-stopped
-    volumes:
-      - ./icecast.xml:/etc/icecast.xml # (Configuração do Icecast)
-    expose:
-      - "8000" # Só na rede interna. Caddy vai expor pro mundo.
-    networks:
-      - radio_network
-    environment:
-      - ICECAST_SOURCE_PASSWORD=${ICECAST_SOURCE_PASSWORD}
-      - ICECAST_RELAY_PASSWORD=${ICECAST_RELAY_PASSWORD}
-      - ICECAST_ADMIN_USER=${ICECAST_ADMIN_USER}
-      - ICECAST_ADMIN_PASSWORD=${ICECAST_ADMIN_PASSWORD}
-
-  liquidsoap:
-    image: savonet/liquidsoap:v2.4.0 # (Usando uma versão moderna)
-    container_name: radio_liquidsoap
-    restart: unless-stopped
-    command: ["/usr/src/radio/radio.liq"]
-    volumes:
-      - ./radio.liq:/usr/src/radio/radio.liq # (O script do "DJ")
-      - ./logs/liquidsoap:/var/log/liquidsoap # (Para logs)
-    expose:
-      - "1234" # (Porta Telnet para a API poder pular música)
-    dns:
-      - 10.0.2.1 # O IP do gateway que você encontrou
-      - 8.8.8.8  # Um fallback, caso o gateway falhe
-    networks:
-      - radio_network
-    depends_on:
-      - icecast
-    environment:
-      - ICECAST_SOURCE_PASSWORD=${ICECAST_SOURCE_PASSWORD}
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
 
 networks:
   radio_network:

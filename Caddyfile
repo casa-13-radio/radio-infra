@@ -1,28 +1,5 @@
 radiocasa13-api.duckdns.org {
-    
-    # Rota 1 & 2: API e WebSocket (COM headers de segurança)
-    # Agrupamos as rotas da API e do WS
-    @api_and_ws {
-        path /api/*
-        path /ws/*
-    }
-    # 'handle' garante que estas regras só rodem para esse @matcher
-    handle @api_and_ws {
-        reverse_proxy api:3000
-        
-        # Headers de segurança vão SÓ AQUI
-        header {
-            X-Content-Type-Options nosniff
-            X-Frame-Options DENY
-            X-XSS-Protection "1; mode=block"
-        }
-    }
-
-    # Rota 3: Streaming (SEM headers de segurança)
-    # Este 'handle' (sem matcher) é o "catch-all".
-    # Ele pega tudo o que não foi pego acima (ex: /stream).
-    handle {
-        reverse_proxy icecast:8000
-        # Note a bela ausência de um bloco de 'header' aqui.
-    }
+    reverse_proxy /api/* api:3000
+    reverse_proxy /stream api:3000
+    reverse_proxy / api:3000
 }
