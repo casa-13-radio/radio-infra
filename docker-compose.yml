@@ -26,8 +26,6 @@ services:
     restart: unless-stopped
     expose:
       - "3000"
-    volumes:
-      - ./api-override/main.py:/app/main.py
     environment:
       - ENVIRONMENT=production
       - S3_ENDPOINT_URL=${S3_ENDPOINT_URL}
