@@ -1,5 +1,75 @@
 radiocasa13-api.duckdns.org {
-    reverse_proxy /api/* api:3000
-    reverse_proxy /stream api:3000
+    # Logging para debugging
+    log {
+        output file /var/log/caddy/access.log {
+            roll_size 100mb
+            roll_keep 5
+        }
+        format json
+    }
+
+    # ========== STREAM (RUST) - PRIORITÁRIO ==========
+    # CRÍTICO: Stream vai DIRETO para o Rust (sem passar pela API)
+    reverse_proxy /stream streamer:8080 {
+        # Configurações otimizadas para streaming
+        flush_interval -1
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        
+        # Timeouts longos para streaming contínuo
+        transport http {
+            dial_timeout 10s
+            response_header_timeout 0
+            read_timeout 0
+        }
+    }
+
+    # ========== API PYTHON (GERENCIAMENTO) ==========
+    
+    # Endpoints da API v1
+    reverse_proxy /api/* api:3000 {
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+    }
+
+    # Endpoints públicos específicos
+    reverse_proxy /playlist api:3000
+    reverse_proxy /now-playing api:3000
+    reverse_proxy /health api:3000
+
+    # ⚠️  BLOQUEIA acesso externo a endpoints internos
+    @internal {
+        path /internal/*
+    }
+    respond @internal "Forbidden" 403
+
+    # Root para status da API
     reverse_proxy / api:3000
+
+    # ========== HEADERS DE SEGURANÇA ==========
+    header {
+        # Previne clickjacking
+        X-Frame-Options "DENY"
+        
+        # Previne XSS
+        X-Content-Type-Options "nosniff"
+        
+        # HTTPS strict
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        
+        # Remove info do servidor
+        -Server
+    }
+
+    # ========== COMPRESSÃO ==========
+    encode gzip zstd
+
+    # ========== ERROR HANDLING ==========
+    handle_errors {
+        @5xx expression `{err.status_code} >= 500 && {err.status_code} < 600`
+        respond @5xx "Serviço temporariamente indisponível" 503
+
+        @4xx expression `{err.status_code} >= 400 && {err.status_code} < 500`
+        respond @4xx "Recurso não encontrado" 404
+    }
 }
