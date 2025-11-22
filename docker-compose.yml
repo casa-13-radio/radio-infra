@@ -23,17 +23,48 @@ services:
     expose:
       - "3000"
     environment:
+      # App config
       - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      
+      # Database
       - USE_DATABASE=true
       - DATABASE_URL=sqlite:///./data/radio.db
+      
+      # S3/OCI Object Storage
       - S3_ENDPOINT_URL=${S3_ENDPOINT_URL}
       - S3_ACCESS_KEY=${S3_ACCESS_KEY}
       - S3_SECRET_KEY=${S3_SECRET_KEY}
       - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      
+      # Security
+      - INTERNAL_API_TOKEN=${INTERNAL_API_TOKEN}
+      
+      # URLs internas
+      - RUST_STREAMER_URL=http://streamer:8080
+      
+      # CORS (produção)
+      - CORS_ORIGINS=["https://radiocasa13-api.duckdns.org"]
+      
+      # Rate limiting
+      - RATE_LIMIT_UPLOADS=5/minute
+      - RATE_LIMIT_API=60/minute
+      
+      # Feature flags
+      - CORTEX_ENABLED=false
+      - ENABLE_ANALYTICS=false
+      - ENABLE_SEARCH=false
     volumes:
       - ./data:/app/data
     networks:
       - radio_network
+    healthcheck: 
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     deploy:
       resources:
         limits:
@@ -47,12 +78,25 @@ services:
     expose:
       - "8080"
     environment:
+      # URLs
       - PYTHON_API_URL=http://api:3000
+      
+      # Security
+      - INTERNAL_API_TOKEN=${INTERNAL_API_TOKEN}
+      
+      # Logging
       - RUST_LOG=radio_streamer=info
     networks:
       - radio_network
     depends_on:
-      - api
+      api: 
+        condition: service_healthy
+    healthcheck: 
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     deploy:
       resources:
         limits:
@@ -66,21 +110,3 @@ networks:
 volumes:
   caddy_data:
   caddy_config:
-```
-
----
-
-### 5️⃣ **Caddyfile - Roteamento**
-```
-radiocasa13-api.duckdns.org {
-    # API Python (gerenciamento)
-    reverse_proxy /api/* api:3000
-    reverse_proxy /playlist api:3000
-    reverse_proxy /health api:3000
-    
-    # Stream Rust (direto, sem proxy!)
-    reverse_proxy /stream streamer:8080
-    
-    # Root para API Python
-    reverse_proxy / api:3000
-}
